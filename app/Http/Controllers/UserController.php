@@ -34,9 +34,9 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request, $id)
+    public function store(UserRequest $request)
     {
-        $registro=User::findOrFail($id);
+        $registro=new User();
         $registro->name=$request->input('name');
         $registro->email=$request->input('email');
         $registro->password=bcrypt($request->input('password'));
@@ -86,5 +86,11 @@ class UserController extends Controller
         $registro=User::findOrFail($id);
         $registro->delete();
         return redirect()->route('usuarios.index')->with('mensaje', $registro->name. 'eliminado satisfactoriamente');
+    }
+
+    public function toggleStatus(User $usuario){
+        $usuario->activo=!$usuario->activo;
+        $usuario->save();
+        return redirect()->route('usuarios.index')->with('mensaje','El usuario fue actualizado satisfactoriamente');
     }
 }

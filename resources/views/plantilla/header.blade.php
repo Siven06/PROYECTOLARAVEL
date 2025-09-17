@@ -22,11 +22,13 @@
              </li>
              <!--end::Fullscreen Toggle-->
              <!--begin::User Menu Dropdown-->
+             @if(Auth::check())
+             
              <li class="nav-item dropdown user-menu">
                  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                      <img src="{{ asset('assets/img/user2-160x160.jpg') }}" class="user-image rounded-circle shadow"
                          alt="User Image" />
-                     <span class="d-none d-md-inline">Alexander Pierce</span>
+                     <span class="d-none d-md-inline">{{Auth::user()->name}}</span>
                  </a>
                  <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                      <!--begin::User Image-->
@@ -34,8 +36,7 @@
                          <img src="{{ asset('assets/img/user2-160x160.jpg') }}" class="rounded-circle shadow"
                              alt="User Image" />
                          <p>
-                             Alexander Pierce - Web Developer
-                             <small>Member since Nov. 2023</small>
+                             {{Auth::user()->name}}                             
                          </p>
                      </li>
                      <!--end::User Image-->
@@ -43,11 +44,15 @@
                      <!--begin::Menu Footer-->
                      <li class="user-footer">
                          <a href="#" class="btn btn-default btn-flat">Profile</a>
-                         <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                         <a href="#" onclick="document.getElementById('logout-form').submit();" class="btn btn-default btn-flat float-end">Sign out</a>
                      </li>
                      <!--end::Menu Footer-->
                  </ul>
              </li>
+             <form action="{{route('logout')}}" id="logout-form" method="post" class="d-none">
+                @csrf
+             </form>
+             @endif
              <!--end::User Menu Dropdown-->
          </ul>
          <!--end::End Navbar Links-->
