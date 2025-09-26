@@ -11,9 +11,15 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $texto = $request->input('texto'); // Obtener el valor del campo de 
+        $registros = Role::with('permissions')
+            ->where('name', 'like', "%{$texto}%")
+            ->orderBy('id', 'desc')
+            ->paginate(2);
+
+        return view('role.index', compact('registros', 'texto'));
     }
 
     /**
@@ -21,7 +27,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+        $permissions = Permission::all();
+        return view('role.action', compact('permissions'));
     }
 
     /**
@@ -29,7 +36,16 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:roles,name',
+            'permissions' => 'required|array'
+        ]);
+
+        $registro = Role::create(['name' => $request->name]);
+        $registro->syncPermissions($request->permissions);
+        
+
+        return redirect()->route('roles.index')->with('mensaje', 'Rol' .$registro->name. 'creado correctamente');
     }
 
     /**
@@ -45,7 +61,9 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $registro = Role::findOrFail($id);
+        $permissions = Permission::all();
+        return view('role.action', compact('registro', 'permissions'));
     }
 
     /**
@@ -53,7 +71,13 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $registro = Role::findOrFail($id);
+        $request->validate([
+            'name' => 'required|unique:roles,name,' . $registro->id,
+            'permissions' => 'required|array'
+        ]);
+        $registro->update(['name' => $request->name]);
+        $registro->syncPermissions($request->permissions);
     }
 
     /**
